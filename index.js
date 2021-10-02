@@ -1,85 +1,122 @@
 // TODO: Include packages needed for this application
 const fs = require("fs");
 const inquirer = require("inquirer");
-const { async } = require("rxjs");
-const util = require("util");
-const writeFileAsync = util.promisify(fs.writeFile);
 
 // TODO: Create an array of questions for user input
-const userPrompt = async () => {
-  const response = await inquirer.prompt([
-    {
-      type: "input",
-      message: "What is the title of your page?",
-      name: "Title",
-    },
-    {
-      type: "input",
-      message: "Please give a description of your project.",
-      name: "Description",
-    },
-    {
-      type: "input",
-      message: "Installation Instructions",
-      name: "Installation",
-      default: "No installation information is available.",
-    },
-    {
-      type: "input",
-      message: "Usage Information",
-      name: "Usage",
-      default: "No usage information is available.",
-    },
-    {
-      type: "list",
-      name: "License",
-      message: "Please choose a License for your application.",
-      choices: ["MIT", "ISC", "Unlicensed"],
-    },
-    {
-      type: "input",
-      message: "Contribution guidelines",
-      name: "Contribution",
-      default: "No contribution information is available.",
-    },
-    {
-      type: "input",
-      message: "Test Instructions",
-      name: "Test",
-      default: "No testing information is available.",
-    },
-    {
-      type: "input",
-      message: "What is your GitHub username?",
-      name: "GitHub",
-      filter: function (answers) {
-        if (answers) {
-          return `https://github.com/${answers}`;
-        } else {
-          return "No GitHub link was entered.";
-        }
-      },
-    },
-    {
-      type: "input",
-      message: "What is your email address?",
-      name: "Email",
-      filter: function (answers) {
-        if (answers) {
-          return `${answers}`;
-        } else {
-          return "No email address was entered.";
-        }
-      },
-    },
-  ]);
+const questions = [
+  {
+    type: "input",
+    name: "title",
+    message: "What is the title of your project?",
+  },
+  {
+    type: "input",
+    name: "github",
+    message: "Please Enter Your GitHub Username",
+  },
+  {
+    type: "input",
+    name: "description",
+    message: "Please Enter A Description of This Project",
+  },
+  {
+    type: "input",
+    name: "usage",
+    message: "Please Enter All Usage Information for This Project"
+  },
+  {
+    type: "input",
+    name: "installation",
+    message: "Please Give Any Installation Information",
+  },
+  {
+    type: "list",
+    name: "license",
+    message: "Please Choose Your License",
+    choices: ["MIT", "Apache", "GNU", "Boost"],
+  },
+  {
+    type: "input",
+    name: "contributing",
+    message: "Please Enter Any Contribution Information",
+  },
+  {
+    type: "input",
+    name: "testing",
+    message: "Please Enter Any Testing Information",
+  },
+  {
+    type: "input",
+    name: "email",
+    message: "Please Enter Your Email Address",
+  },
+];
+
+const generatePage = (obj) => {
+  return `
+
+  # ${obj.title}
+
+  ## Table of Contents
+  
+  [Title](#title)<br>
+  [License](#license)<br>
+  [Description](#description)<br>
+  [Usage](#usage)<br>
+  [Installation](#installation)<br>
+  [Contributing](#contributing)<br>
+  [Testing](#testing)<br>
+  [Questions](#questions)
+
+  # License
+
+  ${obj.license}
+  
+  # Description
+
+  ${obj.description}
+
+  # Usage
+
+  ${obj.usage}
+
+  # Installation
+
+  ${obj.installation}
+
+  # Contributing
+
+  ${obj.contributing}
+
+  # Testing
+
+  ${obj.testing}
+
+  # Questions
+
+  If you have any questions, please don't hesitate to reach out to me at [${obj.email}](mailto:${obj.email}), or on GitHub at [https://github.com/${obj.github}](https://github.com/${obj.github})!
+
+  `;
 };
 
-// TODO: Create a function to write README file
-function writeToFile(fileName, data) {}
+function init() {
+  inquirer
+      .prompt(questions)
+      .then((answers) => {
+          console.log(answers);
 
-// TODO: Create a function to initialize app
-function init() {}
+          const myREADME = generatePage(answers);
 
-// Function call to initialize app
+          console.log(myREADME);
+
+         
+          fs.writeFile('./output/README.md', myREADME, () => {
+              console.log("README file successfully generated! Please check the output directory for your new README file!")
+          })
+
+
+      })
+}
+
+
 init();
